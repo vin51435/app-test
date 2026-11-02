@@ -1,11 +1,19 @@
 package com.manasvia.android
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.manasvia.android.core.di.AppContainer
 
 /**
  * Manasvia Application entry container.
- * Annotated with @HiltAndroidApp to trigger Hilt's root dependency graph compilation.
+ * Hosts the central AppContainer singleton for clean, robust dependency injection.
  */
-@HiltAndroidApp
-class ManasviaApp : Application()
+class ManasviaApp : Application() {
+
+    lateinit var container: AppContainer
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppContainer(this)
+    }
+}
