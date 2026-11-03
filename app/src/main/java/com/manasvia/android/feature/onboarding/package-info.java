@@ -13,6 +13,8 @@
  *   <li><b>{@code SplashViewModel.kt}</b>: ViewModel orchestrating the first-launch guest
  *       registration via {@link com.manasvia.android.domain.usecase.AuthenticateGuestUseCase}.
  *       Provides {@code SplashViewModel.Factory} to bind cleanly without bytecode injection.</li>
+ *   <li><b>{@code SplashScreen.kt}</b>: Declarative Jetpack Compose UI rendering the splash branding,
+ *       loading indicator, authenticated guest confirmation, and error retry state.</li>
  * </ul>
  */
 package com.manasvia.android.feature.onboarding;
