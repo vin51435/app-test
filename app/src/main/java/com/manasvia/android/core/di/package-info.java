@@ -3,14 +3,10 @@
  *
  * <h2>Architectural Purpose:</h2>
  * Manages singleton instantiations and provides dependencies across the entire app
- * lifecycle using clean manual containers and Hilt module bindings.
+ * lifecycle using Google Dagger Hilt dependency injection.
  *
  * <h2>Files in this package:</h2>
  * <ul>
- *   <li><b>{@code AppContainer.kt}</b>: Core application dependency container managing
- *       singletons for {@code Gson}, {@code PreferencesDataStore}, {@code OkHttpClient},
- *       {@code Retrofit}, {@code AuthApiService}, {@code AuthRepository}, and
- *       {@code AuthenticateGuestUseCase}.</li>
  *   <li><b>{@code DispatchersModule.kt}</b>: Dagger Hilt module providing injectable
  *       {@code @IoDispatcher}, {@code @DefaultDispatcher}, and {@code @MainDispatcher}
  *       coroutine contexts.</li>

@@ -1,22 +1,22 @@
 package com.manasvia.android.feature.onboarding
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.manasvia.android.ManasviaApp
 import com.manasvia.android.core.common.Resource
 import com.manasvia.android.domain.usecase.AuthenticateGuestUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel orchestrating frictionless 0-login guest startup per Workflow 1.
+ * Injected automatically via Hilt dependency injection.
  */
-class SplashViewModel(
+@HiltViewModel
+class SplashViewModel @Inject constructor(
     private val authenticateGuestUseCase: AuthenticateGuestUseCase
 ) : ViewModel() {
 
@@ -44,17 +44,6 @@ class SplashViewModel(
                 is Resource.Loading -> {
                     _uiState.value = SplashUiState.Loading
                 }
-            }
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ManasviaApp)
-                SplashViewModel(
-                    authenticateGuestUseCase = application.container.authenticateGuestUseCase
-                )
             }
         }
     }

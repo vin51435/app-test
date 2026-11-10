@@ -11,11 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.manasvia.android.navigation.ManasviaNavHost
 import com.manasvia.android.ui.theme.ManasviaTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Primary Single-Activity entry point.
+ * Annotated with @AndroidEntryPoint to enable Hilt dependency injection into this Activity
+ * and child Composable destinations.
  * Configures edge-to-edge window insets, Material 3 theming, and hosts [ManasviaNavHost].
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

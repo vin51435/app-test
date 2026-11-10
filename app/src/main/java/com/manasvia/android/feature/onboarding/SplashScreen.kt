@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.manasvia.android.ui.theme.ManasviaTheme
 import kotlinx.coroutines.delay
 
@@ -34,7 +34,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onSessionAuthenticated: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SplashViewModel = viewModel(factory = SplashViewModel.Factory)
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -67,7 +67,7 @@ fun SplashScreenContent(
         contentAlignment = Alignment.Center
     ) {
         when (uiState) {
-            is SplashUiState.Loading -> {
+              is SplashUiState.Loading -> {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
