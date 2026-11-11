@@ -131,21 +131,46 @@ class CustomizerViewModel @Inject constructor(
         }
     }
 
+    private var lastActiveInterval: WallpaperRefreshInterval = WallpaperRefreshInterval.DEFAULT
+
     /**
      * Updates the automated refresh schedule interval (2-min test, 30 min, 6 hours, Daily 6 AM, or Manual).
      */
     fun updateRefreshInterval(interval: WallpaperRefreshInterval) {
+        if (interval != WallpaperRefreshInterval.MANUAL_ONLY) {
+            lastActiveInterval = interval
+        }
         _uiState.update { it?.copy(refreshInterval = interval) }
         wallpaperRepository.updateRefreshInterval(interval)
         wallpaperWorkScheduler.scheduleRefresh(interval)
 
         val message = when (interval) {
             WallpaperRefreshInterval.TESTING_2_MIN -> "⚡ Testing Mode: Refreshes every 2 minutes."
-            WallpaperRefreshInterval.MANUAL_ONLY -> "Auto-refresh disabled (Manual Only)."
-            WallpaperRefreshInterval.DAILY_MORNING -> "Refreshes daily at 6:00 AM."
-            else -> "Refreshes every ${interval.label}."
+            WallpaperRefreshInterval.MANUAL_ONLY -> "Auto-cycle turned OFF (Manual Only)."
+            WallpaperRefreshInterval.DAILY_MORNING -> "Auto-cycle ON: Refreshes daily at 6:00 AM."
+            else -> "Auto-cycle ON: Refreshes every ${interval.label}."
         }
         _uiState.update { it?.copy(successMessage = message) }
+    }
+
+    /**
+     * Master switch to turn the automatic wallpaper rotation ON or OFF.
+     */
+    fun toggleAutoRefresh(enabled: Boolean) {
+        if (enabled) {
+            val target = if (lastActiveInterval == WallpaperRefreshInterval.MANUAL_ONLY) {
+                WallpaperRefreshInterval.DEFAULT
+            } else {
+                lastActiveInterval
+            }
+            updateRefreshInterval(target)
+        } else {
+            val current = _uiState.value?.refreshInterval
+            if (current != null && current != WallpaperRefreshInterval.MANUAL_ONLY) {
+                lastActiveInterval = current
+            }
+            updateRefreshInterval(WallpaperRefreshInterval.MANUAL_ONLY)
+        }
     }
 
     /**

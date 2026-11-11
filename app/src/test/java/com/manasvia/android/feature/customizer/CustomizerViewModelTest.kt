@@ -161,6 +161,34 @@ class CustomizerViewModelTest {
     }
 
     @Test
+    fun toggleAutoRefresh_togglesBetweenManualAndPreviousActiveInterval() = runTest {
+        // Initial state is DEFAULT (DAILY_MORNING)
+        assertEquals(WallpaperRefreshInterval.DAILY_MORNING, viewModel.uiState.value?.refreshInterval)
+
+        // Turn OFF via master toggle
+        viewModel.toggleAutoRefresh(false)
+        assertEquals(WallpaperRefreshInterval.MANUAL_ONLY, viewModel.uiState.value?.refreshInterval)
+        assertEquals(WallpaperRefreshInterval.MANUAL_ONLY, fakeScheduler.lastScheduledInterval)
+        assertTrue(viewModel.uiState.value?.successMessage?.contains("Auto-cycle turned OFF") == true)
+
+        // Turn ON via master toggle -> restores DAILY_MORNING
+        viewModel.toggleAutoRefresh(true)
+        assertEquals(WallpaperRefreshInterval.DAILY_MORNING, viewModel.uiState.value?.refreshInterval)
+        assertEquals(WallpaperRefreshInterval.DAILY_MORNING, fakeScheduler.lastScheduledInterval)
+        assertTrue(viewModel.uiState.value?.successMessage?.contains("Auto-cycle ON") == true)
+
+        // Change to 2-min test mode, turn OFF, then turn ON -> restores TESTING_2_MIN
+        viewModel.updateRefreshInterval(WallpaperRefreshInterval.TESTING_2_MIN)
+        assertEquals(WallpaperRefreshInterval.TESTING_2_MIN, viewModel.uiState.value?.refreshInterval)
+
+        viewModel.toggleAutoRefresh(false)
+        assertEquals(WallpaperRefreshInterval.MANUAL_ONLY, viewModel.uiState.value?.refreshInterval)
+
+        viewModel.toggleAutoRefresh(true)
+        assertEquals(WallpaperRefreshInterval.TESTING_2_MIN, viewModel.uiState.value?.refreshInterval)
+    }
+
+    @Test
     fun triggerImmediateRefresh_callsSchedulerAndShowsMessage() = runTest {
         viewModel.triggerImmediateRefresh()
 

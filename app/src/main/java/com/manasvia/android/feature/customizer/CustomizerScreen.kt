@@ -39,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -132,6 +133,7 @@ fun CustomizerScreen(
             onSelectAnchor = { viewModel.updateAnchor(it) },
             onScrimChange = { viewModel.updateScrimOpacity(it) },
             onSelectFont = { viewModel.updateFontFamily(it) },
+            onToggleAutoRefresh = { viewModel.toggleAutoRefresh(it) },
             onSelectRefreshInterval = { viewModel.updateRefreshInterval(it) },
             onTriggerImmediateRefresh = { viewModel.triggerImmediateRefresh() },
             onOpenApplySheet = { viewModel.openApplySheet() },
@@ -159,6 +161,7 @@ fun CustomizerContent(
     onSelectAnchor: (WallpaperAnchor) -> Unit,
     onScrimChange: (Float) -> Unit,
     onSelectFont: (String) -> Unit,
+    onToggleAutoRefresh: (Boolean) -> Unit,
     onSelectRefreshInterval: (WallpaperRefreshInterval) -> Unit,
     onTriggerImmediateRefresh: () -> Unit,
     onOpenApplySheet: () -> Unit,
@@ -253,9 +256,10 @@ fun CustomizerContent(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 4. Auto-Refresh Schedule Selector (2-min test, 30 min, 6 hr, daily morning, manual)
+            // 4. Auto-Refresh Schedule Selector (ON/OFF Toggle, Status Badge, Frequency Chips)
             AutoRefreshScheduleCard(
                 activeInterval = state.refreshInterval,
+                onToggleAutoRefresh = onToggleAutoRefresh,
                 onSelectInterval = onSelectRefreshInterval,
                 onTriggerImmediate = onTriggerImmediateRefresh
             )
@@ -317,100 +321,172 @@ fun CustomizerContent(
 
 /**
  * Schedule selector for automatic wallpaper updates.
- * Supports production schedules (30 min, 6 hr, daily morning) and sub-15 min testing modes (2 min).
+ * Supports production schedules (30 min, 6 hr, daily morning), sub-15 min testing modes (2 min),
+ * and a master ON/OFF toggle switch with real-time status badge indicator.
  */
 @Composable
 private fun AutoRefreshScheduleCard(
     activeInterval: WallpaperRefreshInterval,
+    onToggleAutoRefresh: (Boolean) -> Unit,
     onSelectInterval: (WallpaperRefreshInterval) -> Unit,
     onTriggerImmediate: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isAutoCycleActive = activeInterval != WallpaperRefreshInterval.MANUAL_ONLY
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        // Header Row: Title & Subtitle on left, Switch & Immediate Trigger on right
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Auto-Cycle Wallpaper",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    // Status Badge Pill
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (isAutoCycleActive) {
+                                    Color(0xFF2E7D32).copy(alpha = 0.15f)
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                }
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = if (isAutoCycleActive) "● ACTIVE" else "○ OFF",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isAutoCycleActive) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Auto-Refresh Schedule",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Cycle wallpapers automatically in background",
+                    text = if (isAutoCycleActive) {
+                        "Cycle wallpapers automatically in background"
+                    } else {
+                        "Rotation paused • Wallpapers change manually only"
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            IconButton(
-                onClick = onTriggerImmediate,
-                modifier = Modifier.size(36.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text("⚡", fontSize = 16.sp)
-            }
-        }
-
-        // Horizontal chips for refresh intervals
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val intervals = WallpaperRefreshInterval.entries.toTypedArray()
-            intervals.forEach { interval ->
-                val isSelected = interval == activeInterval
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { onSelectInterval(interval) },
-                    label = { Text(interval.label, fontSize = 12.sp) },
-                    leadingIcon = if (isSelected) {
-                        {
-                            Text(
-                                text = "✓",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    } else null,
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = if (interval == WallpaperRefreshInterval.TESTING_2_MIN) {
-                            MaterialTheme.colorScheme.tertiaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.primaryContainer
-                        }
-                    )
+                if (isAutoCycleActive) {
+                    IconButton(
+                        onClick = onTriggerImmediate,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Text("⚡", fontSize = 16.sp)
+                    }
+                }
+                Switch(
+                    checked = isAutoCycleActive,
+                    onCheckedChange = onToggleAutoRefresh
                 )
             }
         }
 
-        // Informative banner when 2-minute testing mode is active
-        if (activeInterval == WallpaperRefreshInterval.TESTING_2_MIN) {
+        // Horizontal chips for refresh intervals (displayed when Auto-Cycle is active)
+        if (isAutoCycleActive) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Filter out MANUAL_ONLY since master toggle handles it
+                val intervals = WallpaperRefreshInterval.entries.filter { it != WallpaperRefreshInterval.MANUAL_ONLY }
+                intervals.forEach { interval ->
+                    val isSelected = interval == activeInterval
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onSelectInterval(interval) },
+                        label = { Text(interval.label, fontSize = 12.sp) },
+                        leadingIcon = if (isSelected) {
+                            {
+                                Text(
+                                    text = "✓",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else null,
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = if (interval == WallpaperRefreshInterval.TESTING_2_MIN) {
+                                MaterialTheme.colorScheme.tertiaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.primaryContainer
+                            }
+                        )
+                    )
+                }
+            }
+
+            // Informative banner when 2-minute testing mode is active
+            if (activeInterval == WallpaperRefreshInterval.TESTING_2_MIN) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("⚡", fontSize = 16.sp)
+                        Text(
+                            text = "Rapid Testing Active: WorkManager will update your wallpaper every 2 minutes via self-rescheduling.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            }
+        } else {
+            // Muted info card when auto-cycle is OFF
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("⚡", fontSize = 16.sp)
+                    Text("⏸️", fontSize = 15.sp)
                     Text(
-                        text = "Rapid Testing Active: WorkManager will update your wallpaper every 2 minutes via self-rescheduling.",
+                        text = "Auto-cycle is disabled. Flip the switch ON anytime to resume rotating wallpapers automatically.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -1146,6 +1222,7 @@ private fun CustomizerScreenPreviewDarkVelvetLight() {
             onSelectAnchor = {},
             onScrimChange = {},
             onSelectFont = {},
+            onToggleAutoRefresh = {},
             onSelectRefreshInterval = {},
             onTriggerImmediateRefresh = {},
             onOpenApplySheet = {},
@@ -1170,6 +1247,7 @@ private fun CustomizerScreenPreviewDarkVelvetDark() {
             onSelectAnchor = {},
             onScrimChange = {},
             onSelectFont = {},
+            onToggleAutoRefresh = {},
             onSelectRefreshInterval = {},
             onTriggerImmediateRefresh = {},
             onOpenApplySheet = {},
@@ -1194,6 +1272,7 @@ private fun CustomizerScreenPreviewZenParchment() {
             onSelectAnchor = {},
             onScrimChange = {},
             onSelectFont = {},
+            onToggleAutoRefresh = {},
             onSelectRefreshInterval = {},
             onTriggerImmediateRefresh = {},
             onOpenApplySheet = {},
