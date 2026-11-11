@@ -18,8 +18,10 @@ fun NavController.navigateToGallery(navOptions: NavOptions? = null) {
 /**
  * Registers the Gallery destination in the navigation graph.
  */
-fun NavGraphBuilder.galleryDestination() {
+fun NavGraphBuilder.galleryDestination(
+    onNavigateToCustomizer: () -> Unit = {}
+) {
     composable(route = GALLERY_ROUTE) {
-        GalleryScreen()
+        GalleryScreen(onNavigateToCustomizer = onNavigateToCustomizer)
     }
 }

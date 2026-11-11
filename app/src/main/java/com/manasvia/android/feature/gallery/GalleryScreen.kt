@@ -35,6 +35,7 @@ import com.manasvia.android.ui.theme.ManasviaTheme
  */
 @Composable
 fun GalleryScreen(
+    onNavigateToCustomizer: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -62,7 +63,12 @@ fun GalleryScreen(
 
         // Today's Daily Wisdom Card
         item {
-            TodayWisdomCard()
+            TodayWisdomCard(onClick = onNavigateToCustomizer)
+        }
+
+        // Wallpaper Customizer Studio Prompt Card
+        item {
+            WallpaperStudioPromptCard(onClick = onNavigateToCustomizer)
         }
 
         // Quick Action: Home Screen Widget Integration
@@ -73,8 +79,53 @@ fun GalleryScreen(
 }
 
 @Composable
-private fun TodayWisdomCard(modifier: Modifier = Modifier) {
+private fun WallpaperStudioPromptCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Text(
+                text = "🎨 Open Wallpaper Studio",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "Customize live typography, safe-zone spot placement, contrast vignettes, or use personal photos.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onClick,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Customize Wallpaper")
+            }
+        }
+    }
+}
+
+@Composable
+private fun TodayWisdomCard(
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)

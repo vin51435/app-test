@@ -5,6 +5,7 @@ import com.manasvia.android.domain.model.wallpaper.WallpaperAnchor
 import com.manasvia.android.domain.model.wallpaper.WallpaperBackground
 import com.manasvia.android.domain.model.wallpaper.WallpaperConfig
 import com.manasvia.android.domain.model.wallpaper.WallpaperContent
+import com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval
 import com.manasvia.android.domain.model.wallpaper.WallpaperSpec
 import com.manasvia.android.domain.repository.WallpaperRepository
 import kotlinx.coroutines.flow.Flow
@@ -219,10 +220,24 @@ class DefaultWallpaperRepositoryImpl @Inject constructor() : WallpaperRepository
 
     override suspend fun cycleNextQuote(): WallpaperContent {
         return mutex.withLock {
-            quoteCursorIndex = (quoteCursorIndex + 1) % curatedQuotes.size
-            val nextQuote = curatedQuotes[quoteCursorIndex]
+            val currentIndex = curatedQuotes.indexOfFirst { it.id == activeSpecState.value.content.id }
+            val nextIndex = if (currentIndex >= 0) {
+                (currentIndex + 1) % curatedQuotes.size
+            } else {
+                (quoteCursorIndex + 1) % curatedQuotes.size
+            }
+            quoteCursorIndex = nextIndex
+            val nextQuote = curatedQuotes[nextIndex]
             activeSpecState.value = activeSpecState.value.copy(content = nextQuote)
             nextQuote
         }
+    }
+
+    private var currentRefreshInterval: WallpaperRefreshInterval = WallpaperRefreshInterval.DEFAULT
+
+    override fun getRefreshInterval(): WallpaperRefreshInterval = currentRefreshInterval
+
+    override fun updateRefreshInterval(interval: WallpaperRefreshInterval) {
+        currentRefreshInterval = interval
     }
 }

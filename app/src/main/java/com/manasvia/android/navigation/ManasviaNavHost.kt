@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.manasvia.android.feature.customizer.navigation.customizerDestination
+import com.manasvia.android.feature.customizer.navigation.navigateToCustomizer
 import com.manasvia.android.feature.gallery.navigation.galleryDestination
 import com.manasvia.android.feature.gallery.navigation.navigateToGallery
 import com.manasvia.android.feature.onboarding.navigation.ONBOARDING_ROUTE
@@ -51,6 +53,17 @@ fun ManasviaNavHost(
         )
 
         // 3. Main Home Hub & Theme Gallery Destination
-        galleryDestination()
+        galleryDestination(
+            onNavigateToCustomizer = {
+                navController.navigateToCustomizer()
+            }
+        )
+
+        // 4. Personal Base Image Customizer Studio Destination (Pillar 4)
+        customizerDestination(
+            onBackClick = {
+                navController.popBackStack()
+            }
+        )
     }
 }

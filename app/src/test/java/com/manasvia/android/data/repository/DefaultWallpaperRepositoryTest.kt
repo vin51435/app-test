@@ -123,4 +123,15 @@ class DefaultWallpaperRepositoryTest {
         assertEquals("Cinzel", currentConfig.fontFamily)
         assertEquals("#FFF8EE", currentConfig.textColorHex)
     }
+
+    @Test
+    fun getRefreshInterval_defaultsToDailyMorning_andUpdatesCorrectly() {
+        assertEquals(com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval.DAILY_MORNING, repository.getRefreshInterval())
+
+        repository.updateRefreshInterval(com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval.TESTING_2_MIN)
+        assertEquals(com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval.TESTING_2_MIN, repository.getRefreshInterval())
+
+        repository.updateRefreshInterval(com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval.HOURS_6)
+        assertEquals(com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval.HOURS_6, repository.getRefreshInterval())
+    }
 }

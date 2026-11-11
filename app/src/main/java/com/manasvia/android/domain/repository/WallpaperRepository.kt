@@ -4,6 +4,7 @@ import com.manasvia.android.core.common.Resource
 import com.manasvia.android.domain.model.wallpaper.WallpaperBackground
 import com.manasvia.android.domain.model.wallpaper.WallpaperConfig
 import com.manasvia.android.domain.model.wallpaper.WallpaperContent
+import com.manasvia.android.domain.model.wallpaper.WallpaperRefreshInterval
 import com.manasvia.android.domain.model.wallpaper.WallpaperSpec
 import kotlinx.coroutines.flow.Flow
 
@@ -57,4 +58,14 @@ interface WallpaperRepository {
      * Cycles to the next wisdom quote in the curated rotation.
      */
     suspend fun cycleNextQuote(): WallpaperContent
+
+    /**
+     * Returns the active schedule frequency for automatic background wallpaper updates.
+     */
+    fun getRefreshInterval(): WallpaperRefreshInterval
+
+    /**
+     * Updates the schedule frequency for automatic background wallpaper updates.
+     */
+    fun updateRefreshInterval(interval: WallpaperRefreshInterval)
 }
