@@ -44,6 +44,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import com.manasvia.android.core.designsystem.component.badge.StatusBadge
+import com.manasvia.android.core.designsystem.component.badge.StatusType
+import com.manasvia.android.core.designsystem.component.button.OutlineButton
+import com.manasvia.android.core.designsystem.component.button.PrimaryButton
+import com.manasvia.android.core.designsystem.theme.HorizontalSpacer
+import com.manasvia.android.core.designsystem.theme.LocalSpacing
+import com.manasvia.android.core.designsystem.theme.VerticalSpacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -267,31 +274,15 @@ fun CustomizerContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             // 5. Primary Apply Wallpaper CTA
-            Button(
+            PrimaryButton(
+                text = "Set as Wallpaper",
                 onClick = onOpenApplySheet,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .height(54.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !state.isApplying
-            ) {
-                if (state.isApplying) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text("Applying to System...")
-                } else {
-                    Text(
-                        text = "Set as Wallpaper",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+                isLoading = state.isApplying,
+                enabled = !state.isApplying,
+                modifier = Modifier.padding(horizontal = 24.dp),
+                height = 54.dp,
+                shape = RoundedCornerShape(16.dp)
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -358,25 +349,10 @@ private fun AutoRefreshScheduleCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     // Status Badge Pill
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (isAutoCycleActive) {
-                                    Color(0xFF2E7D32).copy(alpha = 0.15f)
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant
-                                }
-                            )
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = if (isAutoCycleActive) "● ACTIVE" else "○ OFF",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isAutoCycleActive) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    StatusBadge(
+                        text = if (isAutoCycleActive) "ACTIVE" else "OFF",
+                        status = if (isAutoCycleActive) StatusType.ACTIVE else StatusType.INACTIVE
+                    )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -1004,17 +980,13 @@ private fun StudioControlsCard(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // A. Photo Picker Button
-        OutlinedButton(
+        OutlineButton(
+            text = "Use My Own Photo (0 Permissions)",
             onClick = onPickPhoto,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            leadingIcon = { Text("🖼️", fontSize = 16.sp) },
+            height = 48.dp,
             shape = RoundedCornerShape(12.dp)
-        ) {
-            Text("🖼️", fontSize = 16.sp)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Use My Own Photo (0 Permissions)")
-        }
+        )
 
         // B. Alignment Spot Selector
         Column {
@@ -1209,30 +1181,30 @@ private fun createSampleCustomizerUiState(presetIndex: Int = 0): CustomizerUiSta
     )
 }
 
-@Preview(name = "Dark Velvet - Light Mode", showBackground = true)
-@Composable
-private fun CustomizerScreenPreviewDarkVelvetLight() {
-    ManasviaTheme(dynamicColor = false) {
-        CustomizerContent(
-            state = createSampleCustomizerUiState(presetIndex = 0),
-            onBackClick = {},
-            onCycleQuote = {},
-            onPickPhoto = {},
-            onSelectPreset = {},
-            onSelectAnchor = {},
-            onScrimChange = {},
-            onSelectFont = {},
-            onToggleAutoRefresh = {},
-            onSelectRefreshInterval = {},
-            onTriggerImmediateRefresh = {},
-            onOpenApplySheet = {},
-            onDismissApplySheet = {},
-            onOpenFullScreenPreview = {},
-            onDismissFullScreenPreview = {},
-            onApplyWallpaper = {}
-        )
-    }
-}
+//@Preview(name = "Dark Velvet - Light Mode", showBackground = true)
+//@Composable
+//private fun CustomizerScreenPreviewDarkVelvetLight() {
+//    ManasviaTheme(dynamicColor = false) {
+//        CustomizerContent(
+//            state = createSampleCustomizerUiState(presetIndex = 0),
+//            onBackClick = {},
+//            onCycleQuote = {},
+//            onPickPhoto = {},
+//            onSelectPreset = {},
+//            onSelectAnchor = {},
+//            onScrimChange = {},
+//            onSelectFont = {},
+//            onToggleAutoRefresh = {},
+//            onSelectRefreshInterval = {},
+//            onTriggerImmediateRefresh = {},
+//            onOpenApplySheet = {},
+//            onDismissApplySheet = {},
+//            onOpenFullScreenPreview = {},
+//            onDismissFullScreenPreview = {},
+//            onApplyWallpaper = {}
+//        )
+//    }
+//}
 
 @Preview(name = "Dark Velvet - Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
@@ -1259,30 +1231,30 @@ private fun CustomizerScreenPreviewDarkVelvetDark() {
     }
 }
 
-@Preview(name = "Zen Parchment Theme", showBackground = true)
-@Composable
-private fun CustomizerScreenPreviewZenParchment() {
-    ManasviaTheme(darkTheme = false, dynamicColor = false) {
-        CustomizerContent(
-            state = createSampleCustomizerUiState(presetIndex = 1),
-            onBackClick = {},
-            onCycleQuote = {},
-            onPickPhoto = {},
-            onSelectPreset = {},
-            onSelectAnchor = {},
-            onScrimChange = {},
-            onSelectFont = {},
-            onToggleAutoRefresh = {},
-            onSelectRefreshInterval = {},
-            onTriggerImmediateRefresh = {},
-            onOpenApplySheet = {},
-            onDismissApplySheet = {},
-            onOpenFullScreenPreview = {},
-            onDismissFullScreenPreview = {},
-            onApplyWallpaper = {}
-        )
-    }
-}
+//@Preview(name = "Zen Parchment Theme", showBackground = true)
+//@Composable
+//private fun CustomizerScreenPreviewZenParchment() {
+//    ManasviaTheme(darkTheme = false, dynamicColor = false) {
+//        CustomizerContent(
+//            state = createSampleCustomizerUiState(presetIndex = 1),
+//            onBackClick = {},
+//            onCycleQuote = {},
+//            onPickPhoto = {},
+//            onSelectPreset = {},
+//            onSelectAnchor = {},
+//            onScrimChange = {},
+//            onSelectFont = {},
+//            onToggleAutoRefresh = {},
+//            onSelectRefreshInterval = {},
+//            onTriggerImmediateRefresh = {},
+//            onOpenApplySheet = {},
+//            onDismissApplySheet = {},
+//            onOpenFullScreenPreview = {},
+//            onDismissFullScreenPreview = {},
+//            onApplyWallpaper = {}
+//        )
+//    }
+//}
 
 @Preview(name = "Full Screen Lock Preview", showBackground = true, widthDp = 390, heightDp = 844)
 @Composable

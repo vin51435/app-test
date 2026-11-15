@@ -3,22 +3,16 @@ package com.manasvia.android.feature.onboarding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +21,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.manasvia.android.core.designsystem.component.button.GhostButton
+import com.manasvia.android.core.designsystem.component.button.PrimaryButton
+import com.manasvia.android.core.designsystem.component.card.AppCard
+import com.manasvia.android.core.designsystem.theme.HorizontalSpacer
+import com.manasvia.android.core.designsystem.theme.LocalSpacing
+import com.manasvia.android.core.designsystem.theme.VerticalSpacer
 import com.manasvia.android.ui.theme.ManasviaTheme
 
 /**
@@ -39,6 +39,7 @@ fun OnboardingScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val spacing = LocalSpacing.current
 
     Column(
         modifier = modifier
@@ -52,7 +53,7 @@ fun OnboardingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            VerticalSpacer(spacing.md)
 
             Text(
                 text = "Manasvia",
@@ -61,7 +62,7 @@ fun OnboardingScreen(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            VerticalSpacer(spacing.sm)
 
             Text(
                 text = "Ancient wisdom for your modern mind.",
@@ -70,7 +71,7 @@ fun OnboardingScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            VerticalSpacer(spacing.xl)
 
             // Value Pillar 1: Home & Lock Screen Integration
             OnboardingPillarCard(
@@ -79,7 +80,7 @@ fun OnboardingScreen(
                 description = "Transform your lock screen and home screen widget into a calm sanctuary with auto-refreshing daily quotes."
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            VerticalSpacer(spacing.md)
 
             // Value Pillar 2: Ancient Scripture + Modern CBT
             OnboardingPillarCard(
@@ -88,7 +89,7 @@ fun OnboardingScreen(
                 description = "Bhagavad Gita, Stoic philosophy, and mindful psychology framed to solve modern burnout and anxiety."
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            VerticalSpacer(spacing.md)
 
             // Value Pillar 3: Zero Login Barrier
             OnboardingPillarCard(
@@ -98,38 +99,26 @@ fun OnboardingScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        VerticalSpacer(spacing.xl)
 
         // Action Section
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
+            PrimaryButton(
+                text = "Begin Your Journey",
                 onClick = onFinishOnboarding,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
+                height = 54.dp,
                 shape = RoundedCornerShape(16.dp)
-            ) {
-                Text(
-                    text = "Begin Your Journey",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+            )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            VerticalSpacer(spacing.sm)
 
-            TextButton(
+            GhostButton(
+                text = "Skip to Daily Hub",
                 onClick = onFinishOnboarding
-            ) {
-                Text(
-                    text = "Skip to Daily Hub",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            )
         }
     }
 }
@@ -141,17 +130,18 @@ private fun OnboardingPillarCard(
     description: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    val spacing = LocalSpacing.current
+
+    AppCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+        ),
+        contentPadding = 20.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top
         ) {
             Text(
@@ -159,7 +149,7 @@ private fun OnboardingPillarCard(
                 fontSize = 28.sp,
                 modifier = Modifier.size(36.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            HorizontalSpacer(spacing.md)
             Column {
                 Text(
                     text = title,
@@ -167,7 +157,7 @@ private fun OnboardingPillarCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                VerticalSpacer(spacing.xs)
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,

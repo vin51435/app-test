@@ -3,12 +3,9 @@ package com.manasvia.android.feature.onboarding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.manasvia.android.core.designsystem.component.button.GhostButton
+import com.manasvia.android.core.designsystem.component.button.PrimaryButton
+import com.manasvia.android.core.designsystem.theme.LocalSpacing
+import com.manasvia.android.core.designsystem.theme.VerticalSpacer
 import com.manasvia.android.ui.theme.ManasviaTheme
 import kotlinx.coroutines.delay
 
@@ -34,6 +35,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onSessionAuthenticated: () -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateToTesting: () -> Unit = {},
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -49,6 +51,7 @@ fun SplashScreen(
     SplashScreenContent(
         uiState = uiState,
         onRetry = { viewModel.initializeSession() },
+        onNavigateToTesting = onNavigateToTesting,
         modifier = modifier
     )
 }
@@ -60,12 +63,24 @@ fun SplashScreen(
 fun SplashScreenContent(
     uiState: SplashUiState,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToTesting: () -> Unit = {}
 ) {
+    val spacing = LocalSpacing.current
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        // Quick access to testing screen in top corner
+        GhostButton(
+            text = "🧪 Test UI",
+            onClick = onNavigateToTesting,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp, end = 16.dp)
+        )
+
         when (uiState) {
               is SplashUiState.Loading -> {
                 Column(
@@ -77,7 +92,7 @@ fun SplashScreenContent(
                         color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 3.dp
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    VerticalSpacer(spacing.md)
                     Text(
                         text = "Aligning your modern mind...",
                         style = MaterialTheme.typography.bodyMedium,
@@ -97,13 +112,13 @@ fun SplashScreenContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    VerticalSpacer(spacing.sm)
                     Text(
                         text = "Ancient wisdom for your modern mind.",
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    VerticalSpacer(spacing.md)
                     Text(
                         text = "Session Ready",
                         style = MaterialTheme.typography.labelMedium,
@@ -122,16 +137,18 @@ fun SplashScreenContent(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.error
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    VerticalSpacer(spacing.sm)
                     Text(
                         text = uiState.message,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Button(onClick = onRetry) {
-                        Text(text = "Retry")
-                    }
+                    VerticalSpacer(spacing.md)
+                    PrimaryButton(
+                        text = "Retry",
+                        onClick = onRetry,
+                        height = 44.dp
+                    )
                 }
             }
         }

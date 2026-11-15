@@ -11,6 +11,13 @@ const val SPLASH_ROUTE = "splash_route"
 const val ONBOARDING_ROUTE = "onboarding_route"
 
 /**
+ * Extension on [NavController] to navigate to the Splash destination.
+ */
+fun NavController.navigateToSplash(navOptions: NavOptions? = null) {
+    navigate(SPLASH_ROUTE, navOptions)
+}
+
+/**
  * Extension on [NavController] to navigate to the Onboarding welcome destination.
  */
 fun NavController.navigateToOnboarding(navOptions: NavOptions? = null) {
@@ -21,13 +28,16 @@ fun NavController.navigateToOnboarding(navOptions: NavOptions? = null) {
  * Registers the Splash destination in the navigation graph.
  *
  * @param onSessionAuthenticated Callback triggered when guest identity is verified and ready.
+ * @param onNavigateToTesting Callback to open the testing playground splash.
  */
 fun NavGraphBuilder.splashDestination(
-    onSessionAuthenticated: () -> Unit
+    onSessionAuthenticated: () -> Unit,
+    onNavigateToTesting: () -> Unit = {}
 ) {
     composable(route = SPLASH_ROUTE) {
         SplashScreen(
-            onSessionAuthenticated = onSessionAuthenticated
+            onSessionAuthenticated = onSessionAuthenticated,
+            onNavigateToTesting = onNavigateToTesting
         )
     }
 }
