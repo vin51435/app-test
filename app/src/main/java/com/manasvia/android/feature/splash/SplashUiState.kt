@@ -1,4 +1,4 @@
-package com.manasvia.android.feature.onboarding
+package com.manasvia.android.feature.splash
 
 /**
  * UI State representation for the initial session initialization and guest verification.

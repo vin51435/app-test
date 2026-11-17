@@ -10,11 +10,11 @@ import com.manasvia.android.feature.customizer.navigation.navigateToCustomizer
 import com.manasvia.android.feature.gallery.navigation.galleryDestination
 import com.manasvia.android.feature.gallery.navigation.navigateToGallery
 import com.manasvia.android.feature.onboarding.navigation.OnboardingRoute
-import com.manasvia.android.feature.onboarding.navigation.SplashRoute
 import com.manasvia.android.feature.onboarding.navigation.navigateToOnboarding
-import com.manasvia.android.feature.onboarding.navigation.navigateToSplash
 import com.manasvia.android.feature.onboarding.navigation.onboardingDestination
-import com.manasvia.android.feature.onboarding.navigation.splashDestination
+import com.manasvia.android.feature.splash.navigation.SplashRoute
+import com.manasvia.android.feature.splash.navigation.navigateToSplash
+import com.manasvia.android.feature.splash.navigation.splashDestination
 import com.manasvia.android.feature.testing.navigation.TestingSplashRoute
 import com.manasvia.android.feature.testing.navigation.navigateToTestingSplash
 import com.manasvia.android.feature.testing.navigation.testingSplashDestination

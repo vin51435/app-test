@@ -1,4 +1,4 @@
-package com.manasvia.android.feature.onboarding
+package com.manasvia.android.feature.splash
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

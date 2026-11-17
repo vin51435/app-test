@@ -1,4 +1,4 @@
-package com.manasvia.android.feature.onboarding
+package com.manasvia.android.feature.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
