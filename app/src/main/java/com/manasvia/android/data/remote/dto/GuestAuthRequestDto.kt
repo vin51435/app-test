@@ -1,10 +1,12 @@
 package com.manasvia.android.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Payload sent to backend during anonymous guest session initialization.
  */
+@Serializable
 data class GuestAuthRequestDto(
-    @SerializedName("deviceFingerprint") val deviceFingerprint: String
+    @SerialName("deviceFingerprint") val deviceFingerprint: String
 )

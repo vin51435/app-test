@@ -5,23 +5,28 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.manasvia.android.feature.gallery.GalleryScreen
+import kotlinx.serialization.Serializable
 
-const val GALLERY_ROUTE = "gallery_route"
+/**
+ * Type-Safe Navigation Route for Gallery / Home Hub Screen.
+ */
+@Serializable
+object GalleryRoute
 
 /**
  * Extension on [NavController] to navigate to the Gallery / Home Hub destination.
  */
 fun NavController.navigateToGallery(navOptions: NavOptions? = null) {
-    navigate(GALLERY_ROUTE, navOptions)
+    navigate(route = GalleryRoute, navOptions = navOptions)
 }
 
 /**
- * Registers the Gallery destination in the navigation graph.
+ * Registers the Gallery destination in the navigation graph using type-safe routing.
  */
 fun NavGraphBuilder.galleryDestination(
     onNavigateToCustomizer: () -> Unit = {}
 ) {
-    composable(route = GALLERY_ROUTE) {
+    composable<GalleryRoute> {
         GalleryScreen(onNavigateToCustomizer = onNavigateToCustomizer)
     }
 }

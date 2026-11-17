@@ -1,6 +1,5 @@
 package com.manasvia.android.core.network
 
-import com.google.gson.Gson
 import com.manasvia.android.core.common.AppConstants
 import com.manasvia.android.core.datastore.UserPreferencesDataStore
 import com.manasvia.android.data.remote.dto.ApiResponseDto
@@ -8,6 +7,8 @@ import com.manasvia.android.data.remote.dto.RefreshTokenRequestDto
 import com.manasvia.android.data.remote.dto.TokenRefreshResponseDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import okhttp3.Authenticator
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -25,7 +26,7 @@ import javax.inject.Singleton
 @Singleton
 class TokenAuthenticator @Inject constructor(
     private val preferencesDataStore: UserPreferencesDataStore,
-    private val gson: Gson
+    private val json: Json
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
@@ -51,7 +52,7 @@ class TokenAuthenticator @Inject constructor(
 
             // Perform synchronous refresh HTTP call
             val refreshClient = OkHttpClient.Builder().build()
-            val requestBody = gson.toJson(RefreshTokenRequestDto(refreshToken))
+            val requestBody = json.encodeToString(RefreshTokenRequestDto(refreshToken))
                 .toRequestBody("application/json".toMediaType())
 
             val refreshRequest = Request.Builder()
@@ -63,8 +64,9 @@ class TokenAuthenticator @Inject constructor(
                 val refreshResponse = refreshClient.newCall(refreshRequest).execute()
                 if (refreshResponse.isSuccessful) {
                     val responseBody = refreshResponse.body?.string()
-                    val type = object : com.google.gson.reflect.TypeToken<ApiResponseDto<TokenRefreshResponseDto>>() {}.type
-                    val apiResponse: ApiResponseDto<TokenRefreshResponseDto>? = gson.fromJson(responseBody, type)
+                    val apiResponse: ApiResponseDto<TokenRefreshResponseDto>? = responseBody?.let {
+                        json.decodeFromString<ApiResponseDto<TokenRefreshResponseDto>>(it)
+                    }
 
                     val newAccessToken = apiResponse?.data?.accessToken
                     if (!newAccessToken.isNullOrBlank()) {

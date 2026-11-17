@@ -6,26 +6,36 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.manasvia.android.feature.onboarding.OnboardingScreen
 import com.manasvia.android.feature.onboarding.SplashScreen
+import kotlinx.serialization.Serializable
 
-const val SPLASH_ROUTE = "splash_route"
-const val ONBOARDING_ROUTE = "onboarding_route"
+/**
+ * Type-Safe Navigation Route for Splash Screen.
+ */
+@Serializable
+object SplashRoute
+
+/**
+ * Type-Safe Navigation Route for Onboarding Screen.
+ */
+@Serializable
+object OnboardingRoute
 
 /**
  * Extension on [NavController] to navigate to the Splash destination.
  */
 fun NavController.navigateToSplash(navOptions: NavOptions? = null) {
-    navigate(SPLASH_ROUTE, navOptions)
+    navigate(route = SplashRoute, navOptions = navOptions)
 }
 
 /**
  * Extension on [NavController] to navigate to the Onboarding welcome destination.
  */
 fun NavController.navigateToOnboarding(navOptions: NavOptions? = null) {
-    navigate(ONBOARDING_ROUTE, navOptions)
+    navigate(route = OnboardingRoute, navOptions = navOptions)
 }
 
 /**
- * Registers the Splash destination in the navigation graph.
+ * Registers the Splash destination in the navigation graph using type-safe routing.
  *
  * @param onSessionAuthenticated Callback triggered when guest identity is verified and ready.
  * @param onNavigateToTesting Callback to open the testing playground splash.
@@ -34,7 +44,7 @@ fun NavGraphBuilder.splashDestination(
     onSessionAuthenticated: () -> Unit,
     onNavigateToTesting: () -> Unit = {}
 ) {
-    composable(route = SPLASH_ROUTE) {
+    composable<SplashRoute> {
         SplashScreen(
             onSessionAuthenticated = onSessionAuthenticated,
             onNavigateToTesting = onNavigateToTesting
@@ -43,14 +53,14 @@ fun NavGraphBuilder.splashDestination(
 }
 
 /**
- * Registers the Onboarding welcome & soul tuning destination in the navigation graph.
+ * Registers the Onboarding welcome destination in the navigation graph using type-safe routing.
  *
  * @param onFinishOnboarding Callback triggered when onboarding is completed or skipped.
  */
 fun NavGraphBuilder.onboardingDestination(
     onFinishOnboarding: () -> Unit
 ) {
-    composable(route = ONBOARDING_ROUTE) {
+    composable<OnboardingRoute> {
         OnboardingScreen(
             onFinishOnboarding = onFinishOnboarding
         )

@@ -9,13 +9,13 @@ import com.manasvia.android.feature.customizer.navigation.customizerDestination
 import com.manasvia.android.feature.customizer.navigation.navigateToCustomizer
 import com.manasvia.android.feature.gallery.navigation.galleryDestination
 import com.manasvia.android.feature.gallery.navigation.navigateToGallery
-import com.manasvia.android.feature.onboarding.navigation.ONBOARDING_ROUTE
-import com.manasvia.android.feature.onboarding.navigation.SPLASH_ROUTE
+import com.manasvia.android.feature.onboarding.navigation.OnboardingRoute
+import com.manasvia.android.feature.onboarding.navigation.SplashRoute
 import com.manasvia.android.feature.onboarding.navigation.navigateToOnboarding
 import com.manasvia.android.feature.onboarding.navigation.navigateToSplash
 import com.manasvia.android.feature.onboarding.navigation.onboardingDestination
 import com.manasvia.android.feature.onboarding.navigation.splashDestination
-import com.manasvia.android.feature.testing.navigation.TESTING_SPLASH_ROUTE
+import com.manasvia.android.feature.testing.navigation.TestingSplashRoute
 import com.manasvia.android.feature.testing.navigation.navigateToTestingSplash
 import com.manasvia.android.feature.testing.navigation.testingSplashDestination
 
@@ -24,17 +24,17 @@ import com.manasvia.android.feature.testing.navigation.testingSplashDestination
  * - true  -> Launches directly into the testing splash & Compose UI sandbox.
  * - false -> Launches the production splash & authentication flow.
  */
-const val LAUNCH_WITH_TESTING_SPLASH = true
+const val LAUNCH_WITH_TESTING_SPLASH = false
 
 /**
  * Top-level Navigation Host for Manasvia.
- * Coordinates feature destinations and transitions across the entire application.
+ * Coordinates feature destinations and transitions across the entire application using Type-Safe Routes.
  */
 @Composable
 fun ManasviaNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestination: String = if (LAUNCH_WITH_TESTING_SPLASH) TESTING_SPLASH_ROUTE else SPLASH_ROUTE
+    startDestination: Any = if (LAUNCH_WITH_TESTING_SPLASH) TestingSplashRoute else SplashRoute
 ) {
     NavHost(
         navController = navController,
@@ -62,7 +62,7 @@ fun ManasviaNavHost(
             onSessionAuthenticated = {
                 navController.navigateToOnboarding(
                     navOptions {
-                        popUpTo(SPLASH_ROUTE) { inclusive = true }
+                        popUpTo<SplashRoute> { inclusive = true }
                     }
                 )
             },
@@ -76,7 +76,7 @@ fun ManasviaNavHost(
             onFinishOnboarding = {
                 navController.navigateToGallery(
                     navOptions {
-                        popUpTo(ONBOARDING_ROUTE) { inclusive = true }
+                        popUpTo<OnboardingRoute> { inclusive = true }
                     }
                 )
             }
